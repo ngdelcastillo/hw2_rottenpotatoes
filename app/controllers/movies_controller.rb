@@ -7,15 +7,19 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @ratings = params[:ratings]
+    @ratings = params[:ratings] == nil && params[:commit] == nil && params[:sort] == nil ? session[:ratings] : params[:ratings]
     @ratings_param = ""
     unless @ratings == nil
       @ratings.keys.each do |rating|
         @ratings_param += "&ratings%5B" + rating.to_s + "%5D=1"
       end
+      session[:ratings] = @ratings
     end
     @movies = Movie.filter_rating(@ratings).order(params[:sort])
-    @sort_by = params[:sort]
+    @sort_by = params[:sort] == nil && params[:commit] == nil ? session[:sort] : params[:sort]
+    unless @sort_by == nil
+      session[:sort] = @sort_by
+    end
     @all_ratings = ['G', 'PG', 'PG-13', 'R']
   end
 
