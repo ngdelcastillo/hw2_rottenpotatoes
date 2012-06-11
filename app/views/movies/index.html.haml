@@ -4,17 +4,20 @@
   Include:
   - @all_ratings.each do |rating|
     = rating
-    = check_box_tag "ratings[#{rating}]"
+    - if @ratings == nil
+      = check_box_tag "ratings[#{rating}]", '1'
+    - else
+      = check_box_tag "ratings[#{rating}]", '1', @ratings.keys.find_index(rating) == nil ? false : true
   = submit_tag 'Refresh', :id => 'ratings_submit'
 %table#movies
   %thead
     %tr
       %th{:class => (@sort_by == 'title' ? 'hilite' : '')}
-        %a#title_header{:href => "/movies?sort=title"} Movie Title
+        %a#title_header{:href => "/movies?sort=title#{@ratings_param}"} Movie Title
         -#= link_to 'Movie Title', :sort => title, :ratings => @ratings.keys
       %th Rating
       %th{:class => (@sort_by == 'release_date' ? 'hilite' : '')}
-        %a#release_date_header{:href => "/movies?sort=release_date"} Release Date
+        %a#release_date_header{:href => "/movies?sort=release_date#{@ratings_param}"} Release Date
       %th More Info
   %tbody
     - @movies.each do |movie|
