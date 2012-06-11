@@ -7,20 +7,34 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = ['G', 'PG', 'PG-13', 'R']
+    #set the ratings based on params or session
     @ratings = params[:ratings] == nil && params[:commit] == nil && params[:sort] == nil ? session[:ratings] : params[:ratings]
+    
+    #clear session if the refresh
+    unless params[:commit] == nil
+      session.clear if params[:commit] == "Refresh"
+    end
+
+    #specify the params to be added in the url
     @ratings_param = ""
     unless @ratings == nil
       @ratings.keys.each do |rating|
         @ratings_param += "&ratings%5B" + rating.to_s + "%5D=1"
       end
+      #set ratings in session
       session[:ratings] = @ratings
     end
-    @movies = Movie.filter_rating(@ratings).order(params[:sort])
+
+    #set the sort based on params or session
     @sort_by = params[:sort] == nil && params[:commit] == nil ? session[:sort] : params[:sort]
     unless @sort_by == nil
+      #set to session
       session[:sort] = @sort_by
     end
-    @all_ratings = ['G', 'PG', 'PG-13', 'R']
+
+    #provide movies based on ratings and sort
+    @movies = Movie.filter_rating(@ratings).order(@sort_by)
   end
 
   def new
